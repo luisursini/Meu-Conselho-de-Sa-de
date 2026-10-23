@@ -14,6 +14,8 @@ export function AdminLayout() {
           Trilhas
         </NavLink>
         <NavLink to="/admin/conselhos">Conselhos</NavLink>
+        <NavLink to="/admin/denuncias">🚩 Denúncias</NavLink>
+        <NavLink to="/admin/solicitacoes">Diretorias inativas</NavLink>
       </div>
       <Outlet />
     </div>

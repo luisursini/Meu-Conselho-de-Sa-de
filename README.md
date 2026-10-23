@@ -5,7 +5,18 @@ App (PWA) para estimular o conhecimento sobre o **controle social do SUS**. Tem 
 - Modelagem completa e plano de versões: [`docs/MODELAGEM.md`](docs/MODELAGEM.md)
 - Tecnologias: React + Vite + TypeScript (PWA instalável) · Supabase (banco, login Google, arquivos) · Vercel (hospedagem). Tudo nos **planos gratuitos**.
 
-## O que já funciona (Versão 1)
+## O que já funciona
+
+### Versão 2: parte social
+- **Feed** com as abas Nacional, Minha cidade e Seguindo; publicações com texto, fotos, link e vídeo; curtidas e comentários
+- **Seguir pessoas** e conselhos
+- **Mural do conselho**, só para membros: a diretoria publica atas e avisos e pode fixá-los
+- A diretoria publica no feed **em nome do conselho**
+- **Eventos**: reuniões do conselho e conferências, com **Lembrar-me** (Google Agenda ou arquivo .ics com alarme)
+- **Denúncias**, com fila de moderação no Admin
+- **Diretoria inativa** (60 dias): membros pedem para assumir e o admin aprova
+
+### Versão 1
 
 - Login com Google e cadastro de perfil: cidade (IBGE), segmento, conselho e UBS
 - Busca de conselhos parecidos enquanto a pessoa digita, para evitar duplicados
@@ -30,6 +41,9 @@ App (PWA) para estimular o conhecimento sobre o **controle social do SUS**. Tem 
    1. `20261023000000_versao1.sql` — tabelas, regras de segurança e funções
    2. `20261023000100_localidades.sql` — estados e municípios do IBGE
    3. `20261023000200_conteudo_inicial.sql` — trilhas iniciais
+   4. `20261024000000_versao2.sql` — feed, mural, eventos e moderação
+
+   > **Já rodou os 3 primeiros antes?** Rode só o 4º.
 3. Em **Project Settings → API**, copie a **Project URL** e a chave **anon public**.
 
 ### 2. Ativar o login com Google

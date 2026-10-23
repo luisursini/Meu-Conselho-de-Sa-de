@@ -15,6 +15,10 @@ import { AdminLayout, AdminTrilhas } from './pages/admin/Admin'
 import { AdminTrilha } from './pages/admin/AdminTrilha'
 import { AdminCurso } from './pages/admin/AdminCurso'
 import { AdminConselhos } from './pages/admin/AdminConselhos'
+import { AdminDenuncias, AdminSolicitacoes } from './pages/admin/AdminModeracao'
+import { Feed } from './pages/Feed'
+import { PostDetalhe } from './pages/PostDetalhe'
+import { Eventos } from './pages/Eventos'
 
 function Rotas() {
   const { sessao, perfil, carregando } = useAuth()
@@ -28,6 +32,9 @@ function Rotas() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Inicio />} />
+        <Route path="feed" element={<Feed />} />
+        <Route path="posts/:postId" element={<PostDetalhe />} />
+        <Route path="eventos" element={<Eventos />} />
         <Route path="aprender" element={<ListaTrilhas />} />
         <Route path="aprender/salvos" element={<Salvos />} />
         <Route path="aprender/:trilhaId" element={<DetalheTrilha />} />
@@ -44,6 +51,8 @@ function Rotas() {
             <Route path="trilhas/:trilhaId" element={<AdminTrilha />} />
             <Route path="cursos/:cursoId" element={<AdminCurso />} />
             <Route path="conselhos" element={<AdminConselhos />} />
+            <Route path="denuncias" element={<AdminDenuncias />} />
+            <Route path="solicitacoes" element={<AdminSolicitacoes />} />
           </Route>
         )}
         <Route path="*" element={<Navigate to="/" replace />} />

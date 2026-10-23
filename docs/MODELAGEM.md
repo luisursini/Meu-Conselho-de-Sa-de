@@ -32,7 +32,7 @@ O cadastro é **livre**, sem verificação.
 - **Quem cadastra o conselho vira diretoria provisória**, e a diretoria indica os demais membros da diretoria.
 - O selo **"⏳ Diretoria provisória"** fica visível até a diretoria confirmar que foi eleita.
 - A diretoria pode: responder pedidos de participação, editar dados do conselho (descrição, horário e local das reuniões, mandato, UBS atendidas), indicar ou remover membros da diretoria e remover membros cadastrados no conselho errado.
-- *(Versão 2)* Se a diretoria ficar **inativa por 60 dias**, os membros podem pedir ao admin para assumir.
+- Se a diretoria ficar **sem atividade no app por 60 dias**, os membros veem um aviso e podem pedir ao admin para assumir. Contam como atividade: responder pedidos, publicar em nome do conselho ou no mural, criar eventos e editar o conselho. O admin aprova ou recusa em **Admin → Diretorias inativas**.
 
 ### "Quero participar"
 
@@ -79,24 +79,26 @@ Refazer um questionário já aprovado **não dá XP de novo**.
 - A parte social **não dá XP**.
 - A tabela `xp_eventos` já registra cada ganho de XP com data, o que permite montar o ranking mensal.
 
-## 4. Parte social *(Versões 2 e 3)*
+## 4. Parte social
 
 | Recurso | Decisão |
 |---|---|
-| Feed | Abas **🇧🇷 Nacional**, **📍 Minha cidade** e **⭐ Seguindo** (conselhos e pessoas) |
-| Publicações | Texto, fotos, links e **links** de vídeo |
-| Mural do conselho | Só para membros. A diretoria posta atas, resumos e avisos em destaque |
-| Fórum | Perguntas e respostas por tema; o autor marca a **✅ melhor resposta** |
-| Mensagens diretas | Qualquer pessoa pode mandar para qualquer pessoa, com opção de **bloquear** |
-| Eventos | Reuniões e conferências com **lembrete** |
-| Moderação | Botão **denunciar**, com revisão do admin |
+| Feed ✅ | Abas **🇧🇷 Nacional**, **📍 Minha cidade** e **⭐ Seguindo** (pessoas e conselhos que sigo, mais o meu conselho) |
+| Publicações ✅ | Texto, até 4 fotos (reduzidas no celular antes do envio, para gastar menos internet), link e **link** de vídeo. Curtidas e comentários |
+| Publicar como conselho ✅ | A diretoria pode publicar no feed **em nome do conselho** |
+| Seguir pessoas ✅ | Botão no perfil, com contadores de seguidores e seguindo |
+| Mural do conselho ✅ | 🔒 Só para membros. Todos conversam; a diretoria publica **📄 Atas** e **📢 Avisos** e pode **📌 fixar** no topo |
+| Eventos ✅ | A diretoria cria as reuniões do conselho; o admin cria conferências municipais e nacionais. **Lembrar-me** marca o evento e oferece **Google Agenda** ou arquivo **.ics** (alarme 1 dia e 1 hora antes), para o próprio celular avisar |
+| Moderação ✅ | **Denunciar** publicações e comentários (do feed e das aulas), com motivo. O admin remove o conteúdo ou ignora a denúncia |
+| Fórum *(V3)* | Perguntas e respostas por tema; o autor marca a **✅ melhor resposta** |
+| Mensagens diretas *(V3)* | Qualquer pessoa pode mandar para qualquer pessoa, com opção de **bloquear** |
 
 ## 5. Plano de versões
 
 | Versão | Conteúdo | Status |
 |---|---|---|
 | **1** | Login Google, perfil, conselhos/UBS, diretoria, "Quero participar", trilhas, aulas, questões, XP, níveis, medalhas, comentários/curtidas/salvos, painel admin | ✅ Pronta |
-| **2** | Feed (3 abas), seguir pessoas, mural do conselho, eventos com lembrete, denúncia, inatividade da diretoria | A fazer |
+| **2** | Feed (3 abas), seguir pessoas, mural do conselho, eventos com lembrete, denúncia, inatividade da diretoria | ✅ Pronta |
 | **3** | Fórum, mensagens diretas, Modo Desafio, rankings | A fazer |
 
 ## 6. Banco de dados (Versão 1)
@@ -128,9 +130,15 @@ profiles ─< aulas_concluidas, tentativas_quiz, cursos_aprovados, medalhas, xp_
 | `quero_participar(conselho, mensagem)` / `responder_pedido` | Pedidos de participação |
 | `mesclar_conselhos(origem, destino)` | Admin junta conselhos duplicados |
 
+### Tabelas da Versão 2
+
+`posts` (escopo `publico` ou `mural`; tipo `normal`, `ata` ou `aviso`), `curtidas_post`, `comentarios_post`, `seguidores_pessoa`, `eventos`, `lembretes_evento`, `denuncias`, `solicitacoes_diretoria`. Funções: `feed(aba, antes, limite, ref)`, `proximos_eventos()`, `denuncias_pendentes()`, `resolver_denuncia()`, `solicitar_diretoria()` e `resolver_solicitacao_diretoria()`.
+
 ### Segurança
 
 - Todas as tabelas usam **Row Level Security**.
 - O usuário **não consegue alterar o próprio XP** nem se tornar admin: um trigger bloqueia.
 - XP, medalhas e aprovações só são gravados pelas funções do servidor.
 - O gabarito das questões é invisível para quem não é admin.
+- O mural só é visível para membros. Um trigger garante que só a diretoria publica atas, avisos e posts em nome do conselho, e que ninguém se passa por outra pessoa.
+- As fotos ficam na pasta de cada usuário no Storage, e só o dono (ou o admin) apaga.

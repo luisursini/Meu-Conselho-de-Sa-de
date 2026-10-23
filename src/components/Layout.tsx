@@ -12,9 +12,14 @@ export function Layout() {
           <span>Meu Conselho de Saúde</span>
         </Link>
         {perfil && (
-          <Link to="/perfil" className="topo-perfil" aria-label="Meu perfil">
-            <Avatar url={perfil.avatar_url} nome={perfil.nome} tamanho={34} />
-          </Link>
+          <div className="topo-acoes">
+            <Link to="/eventos" className="topo-icone" aria-label="Eventos">
+              📅
+            </Link>
+            <Link to="/perfil" className="topo-perfil" aria-label="Meu perfil">
+              <Avatar url={perfil.avatar_url} nome={perfil.nome} tamanho={34} />
+            </Link>
+          </div>
         )}
       </header>
       <main className="conteudo">
@@ -23,6 +28,9 @@ export function Layout() {
       <nav className="menu" aria-label="Menu principal">
         <NavLink to="/" end>
           <span aria-hidden>🏠</span>Início
+        </NavLink>
+        <NavLink to="/feed">
+          <span aria-hidden>💬</span>Feed
         </NavLink>
         <NavLink to="/aprender">
           <span aria-hidden>📚</span>Aprender

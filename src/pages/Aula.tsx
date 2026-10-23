@@ -9,6 +9,7 @@ import { idYoutube } from '../lib/youtube'
 import { dataCurta } from '../lib/texto'
 import type { Aula as TAula } from '../lib/tipos'
 import { Avatar, Carregando, Erro } from '../components/ui'
+import { Denunciar } from '../components/Denunciar'
 
 interface Comentario {
   id: string
@@ -170,11 +171,14 @@ function Comentarios({ aulaId, comentarios, aoMudar }: { aulaId: string; comenta
             </Link>{' '}
             <small className="texto-suave">{dataCurta(c.created_at)}</small>
             <p>{c.texto}</p>
-            {(c.user_id === perfil!.id || perfil!.is_admin) && (
-              <button className="link perigo" onClick={() => apagar(c.id)}>
-                Apagar
-              </button>
-            )}
+            <div className="acoes-linha">
+              {(c.user_id === perfil!.id || perfil!.is_admin) && (
+                <button className="link discreto perigo" onClick={() => apagar(c.id)}>
+                  Apagar
+                </button>
+              )}
+              {c.user_id !== perfil!.id && <Denunciar alvoTipo="comentario_aula" alvoId={c.id} />}
+            </div>
           </div>
         </div>
       ))}
