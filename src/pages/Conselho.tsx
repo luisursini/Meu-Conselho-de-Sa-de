@@ -8,6 +8,10 @@ import { CARGOS, SEGMENTOS, type Cargo, type Conselho as TConselho, type Segment
 import { Avatar, Carregando, Erro, SeloNivel, Vazio } from '../components/ui'
 import { SeletorConselho } from '../components/SeletorConselho'
 import { SeletorUbs } from '../components/SeletorUbs'
+import { NovoPost } from '../components/NovoPost'
+import { ListaPosts } from '../components/ListaPosts'
+import { EventoCard, NovoEvento } from '../components/Eventos'
+import type { Evento } from '../lib/tipos'
 
 interface Pessoa {
   id: string
@@ -75,9 +79,15 @@ function EncontrarConselho() {
   )
 }
 
+type AbaConselho = 'sobre' | 'mural' | 'publicacoes' | 'eventos'
+
+const DIAS_INATIVIDADE = 60
+
 export function Conselho() {
   const { conselhoId } = useParams()
   const { perfil, recarregarPerfil } = useAuth()
+  const [aba, setAba] = useState<AbaConselho>('sobre')
+  const [versaoPosts, setVersaoPosts] = useState(0)
 
   const { dados, erro, carregando, recarregar } = useConsulta(async () => {
     const c = verificar(
@@ -114,6 +124,13 @@ export function Conselho() {
   const souMembro = perfil!.conselho_id === c.id
   const souDiretoria = c.diretoria.some((d) => d.user_id === perfil!.id)
   const podeGerenciar = souDiretoria || perfil!.is_admin
+  const diretoriaInativa = Date.now() - new Date(c.ultima_atividade_diretoria).getTime() > DIAS_INATIVIDADE * 86400 * 1000
+  const abas: [AbaConselho, string][] = [
+    ['sobre', 'Sobre'],
+    ...(souMembro || souDiretoria || perfil!.is_admin ? [['mural', '🔒 Mural'] as [AbaConselho, string]] : []),
+    ['publicacoes', 'Publicações'],
+    ['eventos', 'Eventos'],
+  ]
 
   async function seguir() {
     if (sigo) await supabase.from('seguidores_conselho').delete().eq('conselho_id', c.id).eq('user_id', perfil!.id)
@@ -136,27 +153,6 @@ export function Conselho() {
         <p className="etiqueta sucesso">✔️ Diretoria confirmada</p>
       )}
 
-      <div className="cartao">
-        <h2>Atende</h2>
-        <ul className="lista-simples">
-          {c.conselho_ubs.map(({ ubs }) => (
-            <li key={ubs.id}>🏥 {ubs.nome}</li>
-          ))}
-        </ul>
-        {c.descricao && <p>{c.descricao}</p>}
-        {(c.local_reunioes || c.horario_reunioes) && (
-          <p>
-            🗓️ <strong>Reuniões:</strong> {[c.horario_reunioes, c.local_reunioes].filter(Boolean).join(' · ')}
-          </p>
-        )}
-        {c.mandato_fim && (
-          <p className="texto-suave">
-            Mandato da diretoria: {c.mandato_inicio && `${dataCurta(c.mandato_inicio)} a `}
-            {dataCurta(c.mandato_fim)}
-          </p>
-        )}
-      </div>
-
       {!souMembro && (
         <div className="acoes">
           <button className={`botao ${sigo ? 'secundario' : ''}`} onClick={seguir}>
@@ -166,25 +162,169 @@ export function Conselho() {
       )}
       {!souMembro && <QueroParticipar conselhoId={c.id} pedido={meuPedido} aoMudar={recarregar} />}
 
-      {podeGerenciar && (
-        <PainelDiretoria conselho={c} membros={membros} aoMudar={() => (recarregar(), recarregarPerfil())} />
+      <div className="abas abas-largas" role="tablist">
+        {abas.map(([v, r]) => (
+          <button key={v} role="tab" aria-selected={aba === v} className={aba === v ? 'ativa' : ''} onClick={() => setAba(v)}>
+            {r}
+          </button>
+        ))}
+      </div>
+
+      {aba === 'sobre' && (
+        <>
+          <div className="cartao">
+            <h2>Atende</h2>
+            <ul className="lista-simples">
+              {c.conselho_ubs.map(({ ubs }) => (
+                <li key={ubs.id}>🏥 {ubs.nome}</li>
+              ))}
+            </ul>
+            {c.descricao && <p>{c.descricao}</p>}
+            {(c.local_reunioes || c.horario_reunioes) && (
+              <p>
+                🗓️ <strong>Reuniões:</strong> {[c.horario_reunioes, c.local_reunioes].filter(Boolean).join(' · ')}
+              </p>
+            )}
+            {c.mandato_fim && (
+              <p className="texto-suave">
+                Mandato da diretoria: {c.mandato_inicio && `${dataCurta(c.mandato_inicio)} a `}
+                {dataCurta(c.mandato_fim)}
+              </p>
+            )}
+          </div>
+
+          {souMembro && !souDiretoria && diretoriaInativa && <DiretoriaInativa conselhoId={c.id} />}
+
+          {podeGerenciar && (
+            <PainelDiretoria conselho={c} membros={membros} aoMudar={() => (recarregar(), recarregarPerfil())} />
+          )}
+
+          <h2>Diretoria</h2>
+          {c.diretoria.length === 0 && <Vazio>Sem diretoria cadastrada.</Vazio>}
+          <div className="lista">
+            {c.diretoria.map((d) => (
+              <LinhaPessoa key={d.user_id} pessoa={d.profiles} detalhe={CARGOS[d.cargo]} />
+            ))}
+          </div>
+
+          <h2>Membros</h2>
+          {membros.length === 0 && <Vazio>Nenhum membro ainda.</Vazio>}
+          <div className="lista">
+            {membros.map((m) => (
+              <LinhaPessoa key={m.id} pessoa={m} detalhe={m.segmento ? SEGMENTOS[m.segmento] : ''} />
+            ))}
+          </div>
+        </>
       )}
 
-      <h2>Diretoria</h2>
-      {c.diretoria.length === 0 && <Vazio>Sem diretoria cadastrada.</Vazio>}
-      <div className="lista">
-        {c.diretoria.map((d) => (
-          <LinhaPessoa key={d.user_id} pessoa={d.profiles} detalhe={CARGOS[d.cargo]} />
-        ))}
-      </div>
+      {aba === 'mural' && (
+        <>
+          <p className="texto-suave">🔒 Só os membros do conselho veem o mural.</p>
+          <NovoPost mural={{ conselhoId: c.id, souDiretoria }} aoPublicar={() => setVersaoPosts((v) => v + 1)} />
+          <ListaPosts aba="mural" ref_={c.id} souDiretoria={souDiretoria} versao={versaoPosts} vazio="Nenhuma conversa no mural ainda." />
+        </>
+      )}
 
-      <h2>Membros</h2>
-      {membros.length === 0 && <Vazio>Nenhum membro ainda.</Vazio>}
+      {aba === 'publicacoes' && (
+        <>
+          {souDiretoria && (
+            <NovoPost comoConselho={{ id: c.id, nome: c.nome }} aoPublicar={() => setVersaoPosts((v) => v + 1)} />
+          )}
+          <ListaPosts aba="conselho" ref_={c.id} versao={versaoPosts} vazio="O conselho ainda não fez publicações." />
+        </>
+      )}
+
+      {aba === 'eventos' && <EventosDoConselho conselho={c} podeGerenciar={podeGerenciar} />}
+    </div>
+  )
+}
+
+function EventosDoConselho({ conselho, podeGerenciar }: { conselho: TConselho & { municipios: { nome: string; uf: string } }; podeGerenciar: boolean }) {
+  const { dados, carregando, recarregar } = useConsulta(async () => {
+    const linhas = verificar(
+      await supabase
+        .from('eventos')
+        .select('*, lembretes_evento(user_id)')
+        .eq('conselho_id', conselho.id)
+        .gte('inicio', new Date(Date.now() - 3 * 3600 * 1000).toISOString())
+        .order('inicio'),
+    ) as (Omit<Evento, 'conselho' | 'cidade' | 'lembrete'> & { lembretes_evento: { user_id: string }[] })[]
+    // A regra de segurança só devolve o lembrete da própria pessoa.
+    return linhas.map(({ lembretes_evento, ...e }) => ({
+      ...e,
+      conselho: { id: conselho.id, nome: conselho.nome },
+      cidade: `${conselho.municipios.nome} – ${conselho.municipios.uf}`,
+      lembrete: lembretes_evento.length > 0,
+    })) as Evento[]
+  }, [conselho.id])
+
+  return (
+    <>
+      {podeGerenciar && <NovoEvento conselhoId={conselho.id} aoCriar={recarregar} />}
+      {carregando && !dados && <Carregando />}
+      {dados?.length === 0 && <Vazio>Nenhuma reunião agendada.</Vazio>}
       <div className="lista">
-        {membros.map((m) => (
-          <LinhaPessoa key={m.id} pessoa={m} detalhe={m.segmento ? SEGMENTOS[m.segmento] : ''} />
+        {dados?.map((e) => (
+          <EventoCard key={e.id} evento={e} aoMudar={recarregar} podeApagar={podeGerenciar} />
         ))}
       </div>
+    </>
+  )
+}
+
+/** Membro pede ao admin para assumir a diretoria quando ela some por 60 dias. */
+function DiretoriaInativa({ conselhoId }: { conselhoId: string }) {
+  const [aberto, setAberto] = useState(false)
+  const [cargo, setCargo] = useState<Cargo>('presidente')
+  const [mensagem, setMensagem] = useState('')
+  const [enviado, setEnviado] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  async function enviar() {
+    const { error } = await supabase.rpc('solicitar_diretoria', { p_conselho: conselhoId, p_cargo: cargo, p_mensagem: mensagem })
+    if (error) return setErro(error.message)
+    setEnviado(true)
+  }
+
+  return (
+    <div className="cartao aviso">
+      <strong>⚠️ A diretoria está sem atividade no app há mais de {DIAS_INATIVIDADE} dias</strong>
+      {enviado ? (
+        <p>Pedido enviado! A administração do app vai analisar.</p>
+      ) : !aberto ? (
+        <>
+          <p>Se a diretoria não está mais atuando, você pode pedir à administração para assumir.</p>
+          <button className="botao secundario" onClick={() => setAberto(true)}>
+            Pedir para assumir a diretoria
+          </button>
+        </>
+      ) : (
+        <div className="formulario">
+          <label>
+            Cargo
+            <select value={cargo} onChange={(e) => setCargo(e.target.value as Cargo)}>
+              {Object.entries(CARGOS).map(([v, r]) => (
+                <option key={v} value={v}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Conte o que aconteceu
+            <textarea rows={3} value={mensagem} onChange={(e) => setMensagem(e.target.value)} placeholder="Ex.: Fui eleita na última reunião, a antiga diretoria se afastou." />
+          </label>
+          <Erro mensagem={erro} />
+          <div className="acoes">
+            <button className="botao secundario" onClick={() => setAberto(false)}>
+              Cancelar
+            </button>
+            <button className="botao" onClick={enviar}>
+              Enviar pedido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

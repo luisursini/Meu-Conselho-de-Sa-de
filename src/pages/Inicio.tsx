@@ -4,6 +4,8 @@ import { supabase, verificar } from '../lib/supabase'
 import { carregarTrilhas } from '../lib/progresso'
 import { useConsulta } from '../lib/useConsulta'
 import { BarraXp, Carregando, Progresso } from '../components/ui'
+import { EventoCard } from '../components/Eventos'
+import type { Evento } from '../lib/tipos'
 
 export function Inicio() {
   const { perfil } = useAuth()
@@ -31,6 +33,8 @@ export function Inicio() {
       .eq('status', 'pendente')
     return count ?? 0
   }, [perfil!.conselho_id])
+
+  const eventos = useConsulta(async () => verificar(await supabase.rpc('proximos_eventos', { p_limite: 3 })) as Evento[], [])
 
   const proxima = trilhas.dados?.find((t) => !t.concluida)
 
@@ -78,6 +82,20 @@ export function Inicio() {
           <strong>🔔 {pedidos.dados} {pedidos.dados === 1 ? 'pessoa quer' : 'pessoas querem'} participar do seu conselho</strong>
           <small>Toque para responder</small>
         </Link>
+      )}
+
+      {!!eventos.dados?.length && (
+        <>
+          <div className="titulo-secao">
+            <h2>📅 Próximos eventos</h2>
+            <Link to="/eventos">Ver todos</Link>
+          </div>
+          <div className="lista">
+            {eventos.dados.map((e) => (
+              <EventoCard key={e.id} evento={e} aoMudar={eventos.recarregar} />
+            ))}
+          </div>
+        </>
       )}
 
       <h2>Continue aprendendo</h2>

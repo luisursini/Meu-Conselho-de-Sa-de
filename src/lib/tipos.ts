@@ -39,6 +39,7 @@ export interface Conselho {
   mandato_inicio: string | null
   mandato_fim: string | null
   mesclado_em: string | null
+  ultima_atividade_diretoria: string
 }
 
 export interface Trilha {
@@ -104,3 +105,45 @@ export const CARGOS: Record<Cargo, string> = {
   segundo_secretario: '2º Secretário(a)',
   outro: 'Diretoria',
 }
+
+export interface Post {
+  id: string
+  texto: string
+  link_url: string | null
+  video_url: string | null
+  fotos: string[]
+  tipo: 'normal' | 'ata' | 'aviso'
+  escopo: 'publico' | 'mural'
+  fixado: boolean
+  created_at: string
+  autor: { id: string; nome: string; avatar_url: string | null; xp: number }
+  conselho: { id: string; nome: string } | null
+  cidade: string | null
+  curtidas: number
+  curti: boolean
+  comentarios: number
+}
+
+export type AbaFeed = 'nacional' | 'cidade' | 'seguindo' | 'conselho' | 'mural' | 'pessoa' | 'post'
+
+export interface Evento {
+  id: string
+  tipo: 'reuniao' | 'conferencia' | 'outro'
+  titulo: string
+  descricao: string | null
+  local: string | null
+  link_url: string | null
+  inicio: string
+  fim: string | null
+  conselho: { id: string; nome: string } | null
+  cidade: string
+  lembrete: boolean
+}
+
+export const TIPOS_EVENTO: Record<Evento['tipo'], string> = {
+  reuniao: 'Reunião',
+  conferencia: 'Conferência',
+  outro: 'Evento',
+}
+
+export type AlvoDenuncia = 'post' | 'comentario_post' | 'comentario_aula'
