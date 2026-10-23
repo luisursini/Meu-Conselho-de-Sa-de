@@ -137,6 +137,9 @@ export function Perfil() {
           <button className="botao secundario" onClick={sair}>
             Sair
           </button>
+          <Link to="/privacidade" className="link discreto centro">
+            Política de Privacidade
+          </Link>
         </div>
       )}
     </div>

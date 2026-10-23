@@ -1288,3 +1288,27 @@ label.chip {
 .motivos li {
   padding: 2px 0;
 }
+
+/* ---------- Páginas públicas (privacidade) ---------- */
+.pagina-publica {
+  min-height: 100dvh;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+.texto-legal {
+  line-height: 1.65;
+}
+.texto-legal h2 {
+  margin-top: 16px;
+}
+.texto-legal ul {
+  margin: 0;
+  padding-left: 22px;
+}
+.texto-legal li {
+  margin: 4px 0;
+}
+.link.centro {
+  align-self: center;
+}
