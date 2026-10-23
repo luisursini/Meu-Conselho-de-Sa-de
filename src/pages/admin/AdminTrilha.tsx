@@ -5,6 +5,7 @@ import { useConsulta } from '../../lib/useConsulta'
 import type { Curso, Trilha } from '../../lib/tipos'
 import { Carregando, Erro, Vazio } from '../../components/ui'
 import { EditorQuestoes } from './EditorQuestoes'
+import { QUESTOES_POR_QUESTIONARIO } from '../../lib/questionario'
 
 export function AdminTrilha() {
   const { trilhaId } = useParams()
@@ -122,8 +123,8 @@ export function AdminTrilha() {
                 <strong>{c.titulo}</strong>
                 <small className="texto-suave">
                   {' '}
-                  · {c.aulas.length} aulas · {c.questoes.length} questões
-                  {c.questoes.length === 0 && ' ⚠️'}
+                  · {c.aulas.length} aulas · {c.questoes.length}/{QUESTOES_POR_QUESTIONARIO} questões
+                  {c.questoes.length < QUESTOES_POR_QUESTIONARIO && ' ⚠️'}
                 </small>
               </Link>
               <div className="acoes-linha">

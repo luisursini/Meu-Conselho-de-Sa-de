@@ -25,7 +25,7 @@ App (PWA) para estimular o conhecimento sobre o **controle social do SUS**. Tem 
 - Painel da diretoria: responder pedidos, editar dados, indicar diretoria e remover membros
 - Cartão *"A sua UBS tem um Conselho Local de Saúde!"* para quem ainda não tem vínculo
 - Trilhas → cursos → aulas (texto, vídeo do YouTube, PDF), com comentários, curtidas e aulas salvas
-- Questionários com correção no servidor (aprovação com 70%, tentativas ilimitadas)
+- Questionários com correção no servidor (5 questões por curso, aprovação com 3 acertos, tentativas ilimitadas)
 - XP, 5 níveis e medalhas por trilha
 - Painel admin: trilhas, cursos, aulas, questões (dos cursos e do Modo Desafio) e união de conselhos duplicados
 - Conteúdo inicial: a **Trilha 1 completa** (5 cursos com aula e questões) e as Trilhas 2 a 5 como rascunho

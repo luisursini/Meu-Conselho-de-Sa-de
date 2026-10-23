@@ -3,6 +3,7 @@ import { supabase, verificar } from '../../lib/supabase'
 import { useConsulta } from '../../lib/useConsulta'
 import type { Questao } from '../../lib/tipos'
 import { Carregando, Erro, Vazio } from '../../components/ui'
+import { QUESTOES_POR_QUESTIONARIO } from '../../lib/questionario'
 
 interface QuestaoAdmin extends Questao {
   gabaritos: { correta: number; explicacao: string | null } | null
@@ -67,6 +68,8 @@ export function EditorQuestoes({ trilhaId, cursoId, uso }: { trilhaId: string; c
   }
 
   if (carregando) return <Carregando />
+  // O questionário do curso tem um número fixo de questões; o Modo Desafio não tem limite.
+  const cheio = uso === 'curso' && (dados?.length ?? 0) >= QUESTOES_POR_QUESTIONARIO
 
   return (
     <div className="editor-questoes">
@@ -150,10 +153,20 @@ export function EditorQuestoes({ trilhaId, cursoId, uso }: { trilhaId: string; c
             </button>
           </div>
         </div>
+      ) : cheio ? (
+        <p className="sucesso-msg">✅ Questionário completo ({QUESTOES_POR_QUESTIONARIO}/{QUESTOES_POR_QUESTIONARIO})</p>
       ) : (
-        <button className="botao secundario" onClick={() => setEditando({ ...NOVA, alternativas: [...NOVA.alternativas] })}>
-          + Nova questão
-        </button>
+        <>
+          {uso === 'curso' && (
+            <p className="texto-suave">
+              {dados?.length ?? 0}/{QUESTOES_POR_QUESTIONARIO} questões. Faltam{' '}
+              {QUESTOES_POR_QUESTIONARIO - (dados?.length ?? 0)} para o questionário aparecer.
+            </p>
+          )}
+          <button className="botao secundario" onClick={() => setEditando({ ...NOVA, alternativas: [...NOVA.alternativas] })}>
+            + Nova questão
+          </button>
+        </>
       )}
     </div>
   )

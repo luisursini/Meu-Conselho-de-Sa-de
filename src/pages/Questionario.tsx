@@ -5,6 +5,7 @@ import { supabase, verificar } from '../lib/supabase'
 import { useConsulta } from '../lib/useConsulta'
 import type { Questao, ResultadoQuestionario } from '../lib/tipos'
 import { Carregando, Erro, Vazio } from '../components/ui'
+import { ACERTOS_PARA_APROVAR, QUESTOES_POR_QUESTIONARIO } from '../lib/questionario'
 
 const LETRAS = 'ABCDEF'
 
@@ -28,6 +29,7 @@ export function Questionario() {
   if (erro || !dados) return <Erro mensagem={erro ?? 'Curso não encontrado'} />
   const { curso, questoes } = dados
   const respondidas = Object.keys(respostas).length
+  const incompleto = questoes.length < QUESTOES_POR_QUESTIONARIO
 
   async function enviar() {
     setEnviando(true)
@@ -66,7 +68,12 @@ export function Questionario() {
           </p>
           {resultado.xp_ganho > 0 && <p className="xp-ganho">+{resultado.xp_ganho} XP</p>}
           {resultado.medalha && <p className="medalha-nova">🏅 Você concluiu a trilha e ganhou uma medalha!</p>}
-          {!resultado.aprovado && <p>Você precisa de pelo menos 70% de acertos. Revise as aulas e tente de novo!</p>}
+          {!resultado.aprovado && (
+            <p>
+              Você precisa acertar pelo menos {ACERTOS_PARA_APROVAR} das {QUESTOES_POR_QUESTIONARIO} questões. Revise as aulas e tente
+              de novo!
+            </p>
+          )}
           <div className="acoes">
             <button className="botao secundario" onClick={refazer}>
               Refazer
@@ -77,10 +84,13 @@ export function Questionario() {
           </div>
         </div>
       ) : (
-        <p className="texto-suave">Acerte pelo menos 70% para ser aprovado. Você pode refazer quantas vezes quiser.</p>
+        <p className="texto-suave">
+          Acerte pelo menos {ACERTOS_PARA_APROVAR} das {QUESTOES_POR_QUESTIONARIO} questões para concluir. Você pode refazer quantas
+          vezes quiser.
+        </p>
       )}
 
-      {questoes.length === 0 && <Vazio>Este curso ainda não tem questões.</Vazio>}
+      {incompleto && <Vazio>Este questionário ainda está sendo preparado. Volte em breve!</Vazio>}
       <ol className="questoes">
         {questoes.map((q) => {
           const c = correcao.get(q.id)
@@ -113,7 +123,7 @@ export function Questionario() {
         })}
       </ol>
 
-      {!resultado && questoes.length > 0 && (
+      {!resultado && !incompleto && (
         <>
           <Erro mensagem={erroEnvio} />
           <button className="botao grande" disabled={respondidas < questoes.length || enviando} onClick={enviar}>
