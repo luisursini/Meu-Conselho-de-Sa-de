@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabaseConfigurado } from '../lib/supabase'
 
@@ -31,7 +32,11 @@ export function Login() {
             O app ainda não foi ligado ao Supabase. Preencha o arquivo <code>.env</code> (veja o README).
           </p>
         )}
-        <p className="login-rodape">Projeto independente de educação sobre o controle social no SUS.</p>
+        <p className="login-rodape">
+          Projeto independente de educação sobre o controle social no SUS.
+          <br />
+          Ao entrar, você concorda com a nossa <Link to="/privacidade">Política de Privacidade</Link>.
+        </p>
       </div>
     </div>
   )

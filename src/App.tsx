@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { Layout } from './components/Layout'
 import { Carregando } from './components/ui'
@@ -19,10 +19,14 @@ import { AdminDenuncias, AdminSolicitacoes } from './pages/admin/AdminModeracao'
 import { Feed } from './pages/Feed'
 import { PostDetalhe } from './pages/PostDetalhe'
 import { Eventos } from './pages/Eventos'
+import { Privacidade } from './pages/Privacidade'
 
 function Rotas() {
   const { sessao, perfil, carregando } = useAuth()
+  const { pathname } = useLocation()
 
+  // Página pública: precisa abrir mesmo sem login (o Google exige o link).
+  if (pathname === '/privacidade') return <Privacidade />
   if (carregando || (sessao && !perfil)) return <Carregando />
   if (!sessao) return <Login />
   // Primeiro acesso: completar o perfil antes de usar o app.
