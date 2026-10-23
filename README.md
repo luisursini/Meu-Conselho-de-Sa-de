@@ -81,7 +81,7 @@ Recarregue o app: a aba **⚙️ Admin** vai aparecer.
 
 1. Crie uma conta em <https://vercel.com> usando o GitHub.
 2. Clique em **Add New → Project** e importe este repositório.
-3. Em **Environment Variables**, adicione `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.
+3. Não é preciso configurar variáveis: o endereço e a chave **pública** do Supabase ficam em `src/config.ts`. Se trocar de projeto no Supabase, atualize esse arquivo.
 4. Clique em **Deploy**. Depois, coloque o endereço gerado na **Site URL** do Supabase (passo 2.5).
 
 No celular, abra o endereço e use **"Adicionar à tela inicial"** para instalar o app.
