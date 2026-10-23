@@ -43,7 +43,7 @@ O cadastro é **livre**, sem verificação.
 ## 3. Parte educativa
 
 - Organização: **Trilha → Cursos → Aulas** (texto, vídeo do YouTube ou PDF).
-- Cada curso termina com **questões de múltipla escolha**. Aprovação com **70%**, **tentativas ilimitadas**. A correção é feita **no servidor**, e o gabarito fica numa tabela que só o admin lê.
+- Cada curso termina com **questões de múltipla escolha**. **5 questões** por curso; aprovação com **pelo menos 3 acertos**; **tentativas ilimitadas**. A correção é feita **no servidor**, e o gabarito fica numa tabela que só o admin lê.
 - Nas aulas, a pessoa pode **comentar, curtir e salvar**.
 - Só o **admin** publica conteúdo.
 

@@ -5,6 +5,7 @@ import { useConsulta } from '../../lib/useConsulta'
 import type { Aula, Curso, TipoAula } from '../../lib/tipos'
 import { Carregando, Erro, Vazio } from '../../components/ui'
 import { EditorQuestoes } from './EditorQuestoes'
+import { ACERTOS_PARA_APROVAR, QUESTOES_POR_QUESTIONARIO } from '../../lib/questionario'
 
 const TIPOS: Record<TipoAula, string> = { texto: '📄 Texto', video: '▶️ Vídeo (YouTube)', pdf: '📑 PDF' }
 
@@ -112,7 +113,10 @@ export function AdminCurso() {
 
       <section className="cartao">
         <h2>📝 Questões do curso</h2>
-        <p className="texto-suave">A pessoa precisa acertar 70% para ser aprovada no curso.</p>
+        <p className="texto-suave">
+          Cada questionário tem {QUESTOES_POR_QUESTIONARIO} questões, e a pessoa precisa acertar pelo menos {ACERTOS_PARA_APROVAR}{' '}
+          para concluir o curso. O questionário só aparece para as pessoas quando as {QUESTOES_POR_QUESTIONARIO} estiverem cadastradas.
+        </p>
         <EditorQuestoes trilhaId={f.trilha_id} cursoId={f.id} uso="curso" />
       </section>
 
